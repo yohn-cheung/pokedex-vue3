@@ -186,50 +186,13 @@ export default createStore({
           // img: `https://assets.pokemon.com/assets/cms2/img/pokedex/detail/${id}.png` 
         }
       ]
-
-      // set transformation/regional forms
-      const array = description.data.varieties
-      let varieties = []
-      for(let i = 0; i < array.length; i++) {
-        console.log(array[i])
-
-        let condition = array[i].is_default === true || array[i].pokemon.name.includes('mega') || array[i].pokemon.name.includes('gmax') || array[i].pokemon.name.includes('alola') || array[i].pokemon.name.includes('galar')
-
-          if(condition) {
-            // console.log('object: ', )
-            
-            const name = array[i].pokemon.name.split("-");
-            let formName
-            if(name.length === 2) {
-              formName = name[1]+' '+name[0]
-            } else if(name.length === 2) {
-              formName = name[1]+' '+name[0]+' '+name[2]
-            } else {
-              formName = name[0]
-            }
-
-            const url = array[i].pokemon.url
-            // console.log('url: ', url)
-            const id = url.split('/')[6];
-            // console.log('id: ', id)
-
-            const item = {
-              id: id,
-              name: formName,
-              img: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`
-            }
-
-            varieties.push(item)
-          }
-      }
       context.commit('SET_DATA_POKEMON', data)
-      context.commit('SET_FORM_POKEMON', varieties)
-    },
-    GET_EVO_POKEMON: async(context, url) => {
-      const chain = await axios.get(url)
-      let data = null
+
+      // set evolution chain data
+      const chain = await axios.get(description.data.evolution_chain.url)
+      let evoChainData = null
       if(chain.data.chain.evolves_to.length > 0) {
-        data = []
+        evoChainData = []
         let evoData = chain.data.chain
         // let index = 0
 
@@ -249,7 +212,7 @@ export default createStore({
               break;
           }
 
-          data.push({ 
+          evoChainData.push({ 
             id: id,
             imageID: imageID,
             name: evoData.species.name
@@ -257,6 +220,7 @@ export default createStore({
           
           evoData = evoData.evolves_to[0];
         }
+        context.commit('SET_EVO_POKEMON', evoChainData)
 
         // console.log('evoData ddd: ', evoData)
         
@@ -285,14 +249,47 @@ export default createStore({
         //   });
         // }
       }
-      context.commit('SET_EVO_POKEMON', data)
+
+      // set transformation/regional forms
+      const array = description.data.varieties
+      let varieties = []
+      for(let i = 0; i < array.length; i++) {
+        // console.log(array[i])
+
+        let condition = array[i].is_default === true || array[i].pokemon.name.includes('mega') || array[i].pokemon.name.includes('gmax') || array[i].pokemon.name.includes('alola') || array[i].pokemon.name.includes('galar')
+
+          if(condition) {
+            // console.log('object: ', )
+            
+            const name = array[i].pokemon.name.split("-");
+            let formName
+            if(name.length === 2) {
+              formName = name[1]+' '+name[0]
+            } else if(name.length === 3) {
+              formName = name[1]+' '+name[0]+' '+name[2]
+            } else {
+              formName = name[0]
+            }
+
+            const url = array[i].pokemon.url
+            const id = url.split('/')[6];
+
+            const item = {
+              id: id,
+              name: formName,
+              img: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`
+            }
+
+            varieties.push(item)
+          }
+      }
+      context.commit('SET_FORM_POKEMON', varieties)
     },
     GET_SEARCH_POKEMONS: async(context) =>  {
       const list = await axios.get('https://pokeapi.co/api/v2/pokemon?limit=898&offset=0')
       context.commit('SET_SEARCH_POKEMONS', list)
     }, 
     GET_SEARCH_RESULT(context, payload) {
-      
         const searchPokemons = context.state.searchPokemons
         const searchResult = searchPokemons.filter(item => item.name.includes(payload))
         context.commit('SET_SEARCH_RESULTS', searchResult)
