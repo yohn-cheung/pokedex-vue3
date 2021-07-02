@@ -143,17 +143,12 @@ export default {
     const store = useStore();
     const router = useRouter();
 
-    // let dataPokemon = reactive(store.getters.dataPokemon);
-    // let evoPokemon = reactive(store.getters.evoPokemon);
-    // let formPokemon = reactive(store.getters.formPokemon);
-
     let dataPokemon = computed(() => store.getters.dataPokemon);
     let evoPokemon = computed(() => store.getters.evoPokemon);
     let formPokemon = computed(() => store.getters.formPokemon);
     // const routerBack = computed(() => router.back);
 
     function onLoad() {
-      console.log("test: ", props.id);
       store.dispatch("GET_DATA_POKEMON", props.id);
     }
 
@@ -170,9 +165,7 @@ export default {
 
     // eslint-disable-next-line no-unused-vars
     watch(tab, (newValue, oldValue) => {
-      console.log("newValue: ", tab.value);
       const url = dataPokemon.value[0].evo;
-      // console.log("url: ", url);
       store.dispatch("GET_EVO_POKEMON", url);
     });
 
