@@ -110,13 +110,18 @@
 </template>
 
 <script>
-import { computed, onBeforeMount, ref, reactive, watch } from "vue";
+import { onBeforeMount, computed, watch, ref, reactive } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 
 export default {
   name: "Pokemon",
-  props: ["id"],
+  props: {
+    id: {
+      type: String,
+      required: true,
+    },
+  },
   setup(props) {
     const tab = ref("info");
     const typeColors = reactive({
@@ -146,32 +151,25 @@ export default {
     let dataPokemon = computed(() => store.getters.dataPokemon);
     let evoPokemon = computed(() => store.getters.evoPokemon);
     let formPokemon = computed(() => store.getters.formPokemon);
-    // const routerBack = computed(() => router.back);
-
-    function onLoad() {
-      store.dispatch("GET_DATA_POKEMON", props.id);
-    }
 
     function routerBack() {
       router.go(-1);
-      onLoad();
     }
 
     function openPage(num) {
-      router.push(`/pokemon/` + num);
-      onLoad();
+      router.push({ name: "Pokemon", params: { id: num } });
       tab.value = "info";
     }
 
-    // eslint-disable-next-line no-unused-vars
-    watch(tab, (newValue, oldValue) => {
-      const url = dataPokemon.value[0].evo;
-      store.dispatch("GET_EVO_POKEMON", url);
-    });
+    watch(
+      () => props.id,
+      (newID) => {
+        store.dispatch("GET_DATA_POKEMON", newID);
+      }
+    );
 
     onBeforeMount(() => {
-      // store.dispatch("GET_DATA_POKEMON", props.id);
-      onLoad();
+      store.dispatch("GET_DATA_POKEMON", props.id);
     });
 
     return {
@@ -182,7 +180,6 @@ export default {
       formPokemon,
       routerBack,
       openPage,
-      onLoad,
     };
   },
 };
