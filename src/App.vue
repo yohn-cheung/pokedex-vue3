@@ -25,8 +25,8 @@
 <script>
 import ToolbarSearch from "./components/ToolbarSearch.vue";
 import ToolbarButtons from "./components/ToolbarButtons.vue";
-import { computed } from "vue";
-import { useRouter } from "vue-router";
+
+import { pokemonFunctions } from "./cmp-functions/pokemonFunctions.js";
 
 export default {
   name: "LayoutDefault",
@@ -35,9 +35,7 @@ export default {
     "toolbar-search": ToolbarSearch,
   },
   setup() {
-    const router = useRouter();
-    const routePath = computed(() => router.currentRoute.value.name);
-    const routerBack = computed(() => router.back);
+    const { routePath, routerBack } = pokemonFunctions();
 
     return {
       routePath,

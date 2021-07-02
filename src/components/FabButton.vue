@@ -56,51 +56,22 @@
 </template>
 
 <script>
-import { onBeforeMount, watch, ref } from "vue";
-import { useStore } from "vuex";
+// import { onBeforeMount, watch, ref } from "vue";
+// import { useStore } from "vuex";
+
+import { pokemonFunctions } from "../cmp-functions/pokemonFunctions.js";
 
 export default {
   name: "FabButton",
   setup() {
-    const store = useStore();
-    const titleDialog = ref(false);
-    const toggleDialog = ref(false);
-    const selection = ref(store.getters.gens[0]);
-    let selectedFilter = ref(false);
-
-    function openDialog(filter) {
-      // position.value = pos
-      switch (filter) {
-        case "gens":
-          selectedFilter.value = store.getters.gens;
-          titleDialog.value = "Select generation";
-          break;
-        case "forms":
-          selectedFilter.value = store.getters.forms;
-          titleDialog.value = "Select regional form";
-          break;
-        case "transformation":
-          selectedFilter.value = store.getters.transformation;
-          titleDialog.value = "Select transformation form";
-          break;
-        default:
-          break;
-      }
-      toggleDialog.value = true;
-    }
-
-    function onLoad() {
-      store.dispatch("GET_POKEMONS", selection.value);
-    }
-
-    onBeforeMount(() => {
-      onLoad();
-    });
-
-    watch(selection, (value) => {
-      toggleDialog.value = false;
-      store.dispatch("GET_POKEMONS", value);
-    });
+    const {
+      titleDialog,
+      openDialog,
+      toggleDialog,
+      selection,
+      selectedFilter,
+      showSelectedFilter,
+    } = pokemonFunctions();
 
     return {
       titleDialog,
@@ -108,6 +79,7 @@ export default {
       toggleDialog,
       selection,
       selectedFilter,
+      showSelectedFilter,
     };
   },
 };

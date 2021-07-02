@@ -21,27 +21,12 @@
 <style></style>
 
 <script>
-import { computed } from "vue";
-import { useRouter } from "vue-router";
-import { useStore } from "vuex";
+import { pokemonFunctions } from "../cmp-functions/pokemonFunctions.js";
 
 export default {
   name: "List",
   setup() {
-    const router = useRouter();
-    const store = useStore();
-
-    const listPokemons = computed(() => store.getters.listPokemons);
-
-    function getImage(url) {
-      let id = url.split("/")[6];
-      return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`;
-    }
-
-    function openPage(url) {
-      const num = url.split("/")[6];
-      router.push(`/pokemon/` + num);
-    }
+    const { listPokemons, getImage, openPage } = pokemonFunctions();
 
     return {
       listPokemons,
